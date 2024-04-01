@@ -60,6 +60,20 @@
                 android:layout_weight="1"
                 android:text="Get User Profile" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/topArtistsView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:hint="Top Artist" />
+
+        <Button
+            android:id="@+id/topArtists"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get Top Artists" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

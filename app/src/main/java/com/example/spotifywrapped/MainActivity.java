@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.spotifywrapped.R;
 import com.spotify.sdk.android.auth.AuthorizationClient;
 import com.spotify.sdk.android.auth.AuthorizationRequest;
 import com.spotify.sdk.android.auth.AuthorizationResponse;
@@ -27,8 +26,8 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String CLIENT_ID = "Client ID Here!";
-    public static final String REDIRECT_URI = "[ Insert redirectSchemeName here! ]://[ Insert redirectHostName here! ]";
+    public static final String CLIENT_ID = "df4f62a1fbaa453a82df5932ec64368b";
+    public static final String REDIRECT_URI = "com.example.rawspotify://auth";
 
     public static final int AUTH_TOKEN_REQUEST_CODE = 0;
     public static final int AUTH_CODE_REQUEST_CODE = 1;
@@ -37,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private String mAccessToken, mAccessCode;
     private Call mCall;
 
-    private TextView tokenTextView, codeTextView, profileTextView;
+    private TextView tokenTextView, codeTextView, profileTextView, topArtistTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +47,12 @@ public class MainActivity extends AppCompatActivity {
         tokenTextView = (TextView) findViewById(R.id.token_text_view);
         codeTextView = (TextView) findViewById(R.id.code_text_view);
         profileTextView = (TextView) findViewById(R.id.response_text_view);
-
+        topArtistTextView = (TextView) findViewById(R.id.topArtistsView);
         // Initialize the buttons
         Button tokenBtn = (Button) findViewById(R.id.token_btn);
         Button codeBtn = (Button) findViewById(R.id.code_btn);
         Button profileBtn = (Button) findViewById(R.id.profile_btn);
-
+        Button topArtistsBtn = (Button) findViewById(R.id.topArtists);
         // Set the click listeners for the buttons
 
         tokenBtn.setOnClickListener((v) -> {
@@ -67,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         profileBtn.setOnClickListener((v) -> {
             onGetUserProfileClicked();
         });
+        topArtistsBtn.setOnClickListener((v)-> getTopArtists());
+
 
     }
 
@@ -153,6 +154,59 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    public void getTopArtists() {
+        if (mAccessToken == null) {
+            Toast.makeText(this, "You need to get an access token first!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        final Request request = new Request.Builder()
+                .url("https://api.spotify.com/v1/me/top/artists")
+                .addHeader("Authorization", "Bearer " + mAccessToken)
+                .build();
+        cancelCall();
+        mCall = mOkHttpClient.newCall(request);
+
+        mCall.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("HTTP", "Failed to fetch data: " + e);
+                Toast.makeText(MainActivity.this, "Failed to fetch data, watch Logcat for more details",
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    final JSONObject jsonObject = new JSONObject(response.body().string());
+                    String artist = jsonObject.toString();
+                    //setTextAsync(jsonObject.toString(3), topArtistTextView);
+                    String[] topArtists = new String[5];
+                    String one = artist.substring(artist.indexOf("\"name\":")  + 8,
+                            artist.indexOf("\",\"popularity\":"));
+                    topArtists[0] = one;
+
+                    int i = artist.indexOf("\"name\":") + 1;
+                    int j = artist.indexOf("\",\"popularity\":") + 1;
+                    for(int index = 1; index < 5; index++){
+                        topArtists[index] = artist.substring(artist.indexOf("\"name\"", i) + 8,
+                                artist.indexOf("\",\"popularity\":", j));
+                        i = artist.indexOf("\"name\"", i) + 1;
+                        j = artist.indexOf("\",\"popularity\":", j) + 1;
+                    }
+                    String list = "Top artists: " + topArtists[0] + ", " + topArtists[1] + ", "
+                            + topArtists[2] + ", " + topArtists[3] + ", " + topArtists[4];
+                    setTextAsync(list, topArtistTextView);
+                } catch (JSONException e) {
+                    Log.d("JSON", "Failed to parse data: " + e);
+                    Toast.makeText(MainActivity.this, "Failed to parse data, watch Logcat for more details",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+    }
+
 
     /**
      * Creates a UI thread to update a TextView in the background
@@ -174,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
     private AuthorizationRequest getAuthenticationRequest(AuthorizationResponse.Type type) {
         return new AuthorizationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
                 .setShowDialog(false)
-                .setScopes(new String[] { "user-read-email" }) // <--- Change the scope of your requested token here
+                .setScopes(new String[] { "user-read-email", "user-top-read"}) // <--- Change the scope of your requested token here
                 .setCampaign("your-campaign-token")
                 .build();
     }

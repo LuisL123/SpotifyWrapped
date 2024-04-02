@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -36,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private String mAccessToken, mAccessCode;
     private Call mCall;
 
-    private TextView tokenTextView, codeTextView, profileTextView, topArtistTextView;
+    private TextView tokenTextView, codeTextView, profileTextView, topArtistTextView,
+    topSongTextView, topGenreTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +50,15 @@ public class MainActivity extends AppCompatActivity {
         codeTextView = (TextView) findViewById(R.id.code_text_view);
         profileTextView = (TextView) findViewById(R.id.response_text_view);
         topArtistTextView = (TextView) findViewById(R.id.topArtistsView);
+        topSongTextView = (TextView) findViewById(R.id.topSongsTV);
+        topGenreTextView = (TextView) findViewById(R.id.genresTV);
         // Initialize the buttons
         Button tokenBtn = (Button) findViewById(R.id.token_btn);
         Button codeBtn = (Button) findViewById(R.id.code_btn);
         Button profileBtn = (Button) findViewById(R.id.profile_btn);
         Button topArtistsBtn = (Button) findViewById(R.id.topArtists);
+        Button topSongsBtn = (Button) findViewById(R.id.topSongsBtn);
+        Button topGenreBtn = (Button) findViewById(R.id.genresBtn);
         // Set the click listeners for the buttons
 
         tokenBtn.setOnClickListener((v) -> {
@@ -67,7 +73,8 @@ public class MainActivity extends AppCompatActivity {
             onGetUserProfileClicked();
         });
         topArtistsBtn.setOnClickListener((v)-> getTopArtists());
-
+        topSongsBtn.setOnClickListener(v -> getTopSongs());
+        topGenreBtn.setOnClickListener(v -> getTopGenres());
 
     }
 
@@ -207,7 +214,129 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void getTopSongs() {
+        if (mAccessToken == null) {
+            Toast.makeText(this, "You need to get an access token first!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        final Request request = new Request.Builder()
+                .url("https://api.spotify.com/v1/me/top/tracks")
+                .addHeader("Authorization", "Bearer " + mAccessToken)
+                .build();
+        cancelCall();
+        mCall = mOkHttpClient.newCall(request);
 
+        mCall.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("HTTP", "Failed to fetch data: " + e);
+                Toast.makeText(MainActivity.this, "Failed to fetch data, watch Logcat for more details",
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    final JSONObject jsonObject = new JSONObject(response.body().string());
+                    String songs = jsonObject.toString();
+                    //setTextAsync(jsonObject.toString(3), topArtistTextView);
+                    String[] topSongs = new String[5];
+                    String one = songs.substring(songs.indexOf("\"name\":")  + 8,
+                            songs.indexOf("\",\"popularity\":"));
+                    //topSongs[0] = one;
+
+                    int i = songs.indexOf(",\"name\":") + 1;
+                    //int j = songs.indexOf("\",\"popularity\":") + 1;
+                    int j = 0;
+                    int type = songs.indexOf("\"type\":") + 1;
+                    for(int index = 0; index < 5; index++){
+                        if(songs.indexOf("\",\"popularity\":", j) <
+                        songs.indexOf("\"type\":", type)){
+                            topSongs[index] = songs.substring(songs.indexOf(",\"name\":", i) + 9,
+                                    songs.indexOf("\",\"popularity\":", j));
+                            j = songs.indexOf("\",\"popularity\":", j) + 1;
+                        }else{
+                            index--;
+                        }
+                        /*topSongs[index] = songs.substring(songs.indexOf("\"name\"", i) + 8,
+                                songs.indexOf("\",\"popularity\":", j));
+                        i = songs.indexOf(",\"name\"", i) + 1;
+                        j = songs.indexOf("\",\"popularity\":", j) + 1;*/
+                        i = songs.indexOf(",\"name\":", i) + 1;
+                        type = songs.indexOf("\"type\":", type) + 1;
+                    }
+                    String list = "Top songs: " + topSongs[0] + ", " + topSongs[1] + ", "
+                            + topSongs[2] + ", " + topSongs[3] + ", " + topSongs[4];
+                    setTextAsync(list, topSongTextView);
+                } catch (JSONException e) {
+                    Log.d("JSON", "Failed to parse data: " + e);
+                    Toast.makeText(MainActivity.this, "Failed to parse data, watch Logcat for more details",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    public void getTopGenres(){
+        if (mAccessToken == null) {
+            Toast.makeText(this, "You need to get an access token first!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        final Request request = new Request.Builder()
+                .url("https://api.spotify.com/v1/me/top/artists")
+                .addHeader("Authorization", "Bearer " + mAccessToken)
+                .build();
+        cancelCall();
+        mCall = mOkHttpClient.newCall(request);
+
+        mCall.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("HTTP", "Failed to fetch data: " + e);
+                Toast.makeText(MainActivity.this, "Failed to fetch data, watch Logcat for more details",
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    final JSONObject jsonObject = new JSONObject(response.body().string());
+                    String artist = jsonObject.toString();
+                    //setTextAsync(jsonObject.toString(3), topArtistTextView);
+                    //String[] topGenres = new String[5];
+                    ArrayList<String> topGenres = new ArrayList();
+                    ArrayList<String> genres = new ArrayList<>();
+                    //String one = artist.substring(artist.indexOf("\"name\":")  + 8,
+                            //rtist.indexOf("\",\"popularity\":"));
+                    //topGenres[0] = one;
+                    String one = artist.substring(artist.indexOf("genres") + 11,
+                            artist.indexOf("\"],"));
+                    int i = 0;
+                    int j = 0;
+                    for(int index = 0; index < 5; index++){
+                        String[] each =  artist.substring(artist.indexOf("genres", i) + 9,
+                                artist.indexOf("\"],", j) + 1).split(",");
+                        for(int k = 0; k < each.length; k++){
+                            if(!topGenres.contains(each[k])){
+                                topGenres.add(each[k]);
+                            }
+                        }
+                        i = artist.indexOf("genres", i) + 1;
+                        j = artist.indexOf("\"],", j) + 1;;
+                    }
+                    String list = "Top Genres:";
+                    for(int z = 0; z < topGenres.size(); z++){
+                        list = list + " " + topGenres.get(z).substring(1,topGenres.get(z).length() - 1) + ",";
+                    }
+                    setTextAsync(list.substring(0,list.length() - 1), topGenreTextView);
+                } catch (JSONException e) {
+                    Log.d("JSON", "Failed to parse data: " + e);
+                    Toast.makeText(MainActivity.this, "Failed to parse data, watch Logcat for more details",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
     /**
      * Creates a UI thread to update a TextView in the background
      * Reduces UI latency and makes the system perform more consistently
@@ -228,7 +357,7 @@ public class MainActivity extends AppCompatActivity {
     private AuthorizationRequest getAuthenticationRequest(AuthorizationResponse.Type type) {
         return new AuthorizationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
                 .setShowDialog(false)
-                .setScopes(new String[] { "user-read-email", "user-top-read"}) // <--- Change the scope of your requested token here
+                .setScopes(new String[] { "user-read-email", "user-top-read"    }) // <--- Change the scope of your requested token here
                 .setCampaign("your-campaign-token")
                 .build();
     }

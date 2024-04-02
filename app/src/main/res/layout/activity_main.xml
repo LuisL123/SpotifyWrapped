@@ -74,6 +74,33 @@
             android:layout_height="wrap_content"
             android:text="Get Top Artists" />
 
+        <TextView
+            android:id="@+id/topSongsTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:layout_margin="8dp"
+            android:hint="Top Songs"/>
+        <Button
+            android:id="@+id/topSongsBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get Top Songs" />
+
+        <TextView
+            android:id="@+id/genresTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:hint="Top Genres"/>
+
+        <Button
+            android:id="@+id/genresBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get Top Genres" />
+
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

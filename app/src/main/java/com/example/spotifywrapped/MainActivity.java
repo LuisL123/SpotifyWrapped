@@ -1,10 +1,14 @@
 package com.example.spotifywrapped;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.os.Bundle;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,14 +41,19 @@ public class MainActivity extends AppCompatActivity {
     private String mAccessToken, mAccessCode;
     private Call mCall;
 
+    Button spotifyWrappedBtn;
     private TextView tokenTextView, codeTextView, profileTextView, topArtistTextView,
     topSongTextView, topGenreTextView;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //getSupportFragmentManager().beginTransaction().add(R.id.container, new SpotifyWrappedFragment()).commit();
         // Initialize the views
         tokenTextView = (TextView) findViewById(R.id.token_text_view);
         codeTextView = (TextView) findViewById(R.id.code_text_view);
@@ -59,8 +68,20 @@ public class MainActivity extends AppCompatActivity {
         Button topArtistsBtn = (Button) findViewById(R.id.topArtists);
         Button topSongsBtn = (Button) findViewById(R.id.topSongsBtn);
         Button topGenreBtn = (Button) findViewById(R.id.genresBtn);
+         spotifyWrappedBtn = findViewById(R.id.spotify_wrapped);
+
         // Set the click listeners for the buttons
 
+        spotifyWrappedBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spotifyWrappedBtn.setVisibility(View.GONE);
+                Fragment fragment = new SpotifyWrappedFragment();
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.activity_main, fragment).commit();
+
+            }
+        });
         tokenBtn.setOnClickListener((v) -> {
             getToken();
         });
@@ -382,4 +403,6 @@ public class MainActivity extends AppCompatActivity {
         cancelCall();
         super.onDestroy();
     }
+
+
 }

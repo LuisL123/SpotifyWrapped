@@ -7,12 +7,24 @@
     tools:context=".SpotifyWrappedFragment">
 
 
+    <ImageView
+        android:id="@+id/iv_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/anim_slideshow" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:shadowColor="#000000"
+        android:shadowRadius="5"
         android:gravity="center"
+        android:textColor="#FFFFFF"
         android:text="Welcome to Spotify Wrapped"
-        android:textSize="20dp"/>
+        android:textSize="64sp"
+        android:textStyle="bold" />
 
 </RelativeLayout>

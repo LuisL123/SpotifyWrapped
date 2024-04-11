@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.content.Intent;
 import android.net.Uri;
@@ -22,12 +24,16 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button spotifyWrappedBtn;
     private TextView tokenTextView, codeTextView, profileTextView, topArtistTextView,
-    topSongTextView, topGenreTextView;
+    topSongTextView, topGenreTextView, topSongsIDTV;
 
 
 
@@ -61,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         topArtistTextView = (TextView) findViewById(R.id.topArtistsView);
         topSongTextView = (TextView) findViewById(R.id.topSongsTV);
         topGenreTextView = (TextView) findViewById(R.id.genresTV);
+        topSongsIDTV = (TextView) findViewById(R.id.songIDS);
         // Initialize the buttons
         Button tokenBtn = (Button) findViewById(R.id.token_btn);
         Button codeBtn = (Button) findViewById(R.id.code_btn);
@@ -68,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         Button topArtistsBtn = (Button) findViewById(R.id.topArtists);
         Button topSongsBtn = (Button) findViewById(R.id.topSongsBtn);
         Button topGenreBtn = (Button) findViewById(R.id.genresBtn);
+        Button topSongsID = (Button) findViewById(R.id.getSongID);
          spotifyWrappedBtn = findViewById(R.id.spotify_wrapped);
 
         // Set the click listeners for the buttons
@@ -85,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
         tokenBtn.setOnClickListener((v) -> {
             getToken();
         });
+        topSongsID.setOnClickListener((v -> getSongMp3File()));
 
         codeBtn.setOnClickListener((v) -> {
             getCode();
@@ -357,6 +366,90 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void getSongMp3File(){
+
+        if (mAccessToken == null) {
+            Toast.makeText(this, "You need to get an access token first!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        final Request request = new Request.Builder()
+                .url("https://api.spotify.com/v1/me/top/tracks")
+                .addHeader("Authorization", "Bearer " + mAccessToken)
+                .build();
+        cancelCall();
+        mCall = mOkHttpClient.newCall(request);
+
+        mCall.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.d("HTTP", "Failed to fetch data: " + e);
+                Toast.makeText(MainActivity.this, "Failed to fetch data, watch Logcat for more details",
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try {
+                    final JSONObject jsonObject = new JSONObject(response.body().string());
+                    String songs = jsonObject.toString();
+                    String[] preview_URLS = new String[5];
+                    int startIndex = songs.indexOf("preview_url");
+                    int endIndex = songs.indexOf("\",\"track_number");
+                    for(int z = 0; z < 5; z++){
+                        preview_URLS[z] = songs.substring(startIndex + 14, endIndex);
+                        startIndex = songs.indexOf("preview_url", startIndex + 1);
+                        endIndex = songs.indexOf("\",\"track_number", endIndex + 1);
+                    }
+                    String test = "//";
+                    setTextAsync(
+                            //String.valueOf(preview_URLS[0].replace("\\","").equals("https://p.scdn.co/mp3-preview/70bbac665619a7472a1563bbfbed43b558fc8019?cid=cfe923b2d660439caf2b557b21f31221")),
+                            preview_URLS[0].replace("\\","").replace(" ",""),
+                            topSongsIDTV);
+                    //playClip("https://p.scdn.co/mp3-preview/70bbac665619a7472a1563bbfbed43b558fc8019?cid=cfe923b2d660439caf2b557b21f31221");
+                    playClip(preview_URLS[4].replace("\\","").replace(" ",""));
+                } catch (JSONException e) {
+                    Log.d("JSON", "Failed to parse data: " + e);
+                    Toast.makeText(MainActivity.this, "Failed to parse data, watch Logcat for more details",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+    public static void playClip(String songMp3File){
+        MediaPlayer mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try {
+            mediaPlayer.setDataSource(songMp3File);
+            // below line is use to prepare
+            // and start our media player.
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            //ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+            //executorService.schedule(MainActivity::stopClip(mediaPlayer),10, TimeUnit.SECONDS);
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                        @Override
+                        public void run() {
+                            stopClip(mediaPlayer);
+                        }
+                    },
+                    10000
+            );
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void stopClip(MediaPlayer mediaPlayer){
+        if(mediaPlayer.isPlaying()){
+            mediaPlayer.stop();
+            mediaPlayer.reset();
+            mediaPlayer.release();
+        }
     }
     /**
      * Creates a UI thread to update a TextView in the background

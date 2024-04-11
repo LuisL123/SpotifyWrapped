@@ -114,6 +114,18 @@
             android:layout_height="wrap_content"
             android:text="Game!" />
 
+        <TextView
+            android:id="@+id/songIDS"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Song IDS" />
+
+        <Button
+            android:id="@+id/getSongID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Get Song ID and Play Song" />
+
 
     </LinearLayout>
 

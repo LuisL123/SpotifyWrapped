@@ -108,6 +108,12 @@
             android:onClick = "this"
             tools:ignore="OnClick" />
 
+        <Button
+            android:id="@+id/game"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Game!" />
+
 
     </LinearLayout>
 

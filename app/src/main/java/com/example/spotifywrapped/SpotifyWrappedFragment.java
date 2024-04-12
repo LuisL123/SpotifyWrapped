@@ -10,10 +10,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,6 +41,7 @@ public class SpotifyWrappedFragment extends Fragment {
     private Call mCall;
 
     Button spotifyWrappedBtn;
+    private ListView lvHomePage;
     private TextView tokenTextView, codeTextView, profileTextView, topArtistTextView,
             topSongTextView, topGenreTextView, topSongsIDTV;
     @Override
@@ -63,7 +65,9 @@ public class SpotifyWrappedFragment extends Fragment {
             animationDrawable.start();
         }
         String[] list = new String[]{getTopArtists()};
-        System.out.println(list[0]);
+        lvHomePage = view.findViewById(R.id.listView);
+        lvHomePage.setAdapter(new ArrayAdapter<String>(view.getContext(), android.
+                R.layout.simple_list_item_1 , list));
     }
 
     public String getTopArtists() {

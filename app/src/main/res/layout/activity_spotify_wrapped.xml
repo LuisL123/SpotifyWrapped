@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    android:padding="16dp">
+
+    <Button
+        android:id="@+id/homeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Home"
+    android:padding="12dp"
+    android:background="@drawable/button_background"
+    android:textColor="@android:color/white"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/categoryHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/primary_text"
+        android:text="Top Tracks" /> <!-- Default text, will change programmatically -->
+
+    <ListView
+        android:id="@+id/listViewData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/categoryHeader"
+        android:layout_above="@id/nextButton"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:listSelector="@android:color/transparent" />
+
+    <Button
+        android:id="@+id/nextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Next"
+        android:padding="12dp"
+        android:background="@drawable/button_background"
+        android:textColor="@android:color/white" />
+
+</RelativeLayout>

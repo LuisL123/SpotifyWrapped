@@ -222,55 +222,7 @@ public class HomePageActivity extends AppCompatActivity {
         }
     }
 
-    public void getSongMp3File(){
 
-        if (mAccessToken == null) {
-            Toast.makeText(this, "You need to get an access token first!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        final Request request = new Request.Builder()
-                .url("https://api.spotify.com/v1/me/top/tracks")
-                .addHeader("Authorization", "Bearer " + mAccessToken)
-                .build();
-        cancelCall();
-        mCall = mOkHttpClient.newCall(request);
-
-        mCall.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d("HTTP", "Failed to fetch data: " + e);
-                Toast.makeText(MainActivity.this, "Failed to fetch data, watch Logcat for more details",
-                        Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-                    final JSONObject jsonObject = new JSONObject(response.body().string());
-                    String songs = jsonObject.toString();
-                    String[] preview_URLS = new String[5];
-                    int startIndex = songs.indexOf("preview_url");
-                    int endIndex = songs.indexOf("\",\"track_number");
-                    for(int z = 0; z < 5; z++){
-                        preview_URLS[z] = songs.substring(startIndex + 14, endIndex);
-                        startIndex = songs.indexOf("preview_url", startIndex + 1);
-                        endIndex = songs.indexOf("\",\"track_number", endIndex + 1);
-                    }
-                    String test = "//";
-                    setTextAsync(
-                            //String.valueOf(preview_URLS[0].replace("\\","").equals("https://p.scdn.co/mp3-preview/70bbac665619a7472a1563bbfbed43b558fc8019?cid=cfe923b2d660439caf2b557b21f31221")),
-                            preview_URLS[0].replace("\\","").replace(" ",""),
-                            topSongsIDTV);
-                    //playClip("https://p.scdn.co/mp3-preview/70bbac665619a7472a1563bbfbed43b558fc8019?cid=cfe923b2d660439caf2b557b21f31221");
-                    playClip(preview_URLS[4].replace("\\","").replace(" ",""));
-                } catch (JSONException e) {
-                    Log.d("JSON", "Failed to parse data: " + e);
-                    Toast.makeText(MainActivity.this, "Failed to parse data, watch Logcat for more details",
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
 
     private void fetchArtistGenres(List<String> artistIds, List<String> topTracks, List<String> topArtists, List<String> trackURIs) {
         List<String> topGenres = new ArrayList<>();

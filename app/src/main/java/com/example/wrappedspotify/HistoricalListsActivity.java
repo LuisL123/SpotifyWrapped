@@ -18,66 +18,65 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.Date;
+import java.util.HashMap;
 
 public class HistoricalListsActivity extends AppCompatActivity {
 
-    private DatabaseReference mDatabase;
     private ListView listViewHistory;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_historical_lists);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
         listViewHistory = findViewById(R.id.listViewHistory);
-        Button buttonHome = findViewById(R.id.buttonHome);
-
-        buttonHome.setOnClickListener(v -> {
+        loadFetchHistory();
+        Button homeButton = findViewById(R.id.buttonHome);
+        homeButton.setOnClickListener(v -> {
             Intent intent = new Intent(HistoricalListsActivity.this, HomePageActivity.class);
             startActivity(intent);
         });
-
-        displayHistory();
     }
 
-    private void displayHistory() {
+    private void loadFetchHistory() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String userId = user.getUid();
-            mDatabase.child("users").child(userId).child("fetchHistory")
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            List<String> historyList = new ArrayList<>();
-                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                Map<String, Object> historyItem = (Map<String, Object>) snapshot.getValue();
-                                if (historyItem != null && historyItem.containsKey("timestamp")) {
-                                    long timestamp = (long) historyItem.get("timestamp");
-                                    String formattedTimestamp = String.valueOf(timestamp);
-                                    historyList.add(formattedTimestamp);
-                                }
-                            }
-                            if (!historyList.isEmpty()) {
-                                ArrayAdapter<String> adapter = new ArrayAdapter<>(HistoricalListsActivity.this,
-                                        android.R.layout.simple_list_item_1, historyList);
-                                listViewHistory.setAdapter(adapter);
-                            } else {
-                                Toast.makeText(HistoricalListsActivity.this, "No history available.", Toast.LENGTH_SHORT).show();
-                            }
-                        }
+            DatabaseReference fetchHistoryRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("fetchHistory");
+            fetchHistoryRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    ArrayList<String> fetchHistoryList = new ArrayList<>();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        HashMap<String, Object> fetch = (HashMap<String, Object>) snapshot.getValue();
+                        Long fetchDate = (Long) fetch.get("fetchDate");
+                        String dateString = formatDate(fetchDate);
+                        fetchHistoryList.add("Fetch Date: " + dateString);
+                    }
+                    updateListView(fetchHistoryList);
+                }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Toast.makeText(HistoricalListsActivity.this, "Failed to retrieve history: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Toast.makeText(HistoricalListsActivity.this, "Failed to load history: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
         } else {
             Toast.makeText(this, "User is not signed in.", Toast.LENGTH_SHORT).show();
         }
     }
+
+    private String formatDate(Long milliseconds) {
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy HH:mm");
+        return formatter.format(new Date(milliseconds));
+    }
+
+    private void updateListView(ArrayList<String> data) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, data);
+        listViewHistory.setAdapter(adapter);
+    }
 }
+

@@ -30,12 +30,32 @@ public class EditAccountActivity extends AppCompatActivity {
         updateEmailButton.setOnClickListener(v -> updateEmail());
         updatePasswordButton.setOnClickListener(v -> updatePassword());
         goHomeButton.setOnClickListener(v -> goHome());
+        Button deleteAccountButton = findViewById(R.id.deleteAccountButton);
+        deleteAccountButton.setOnClickListener(v -> deleteAccount());
+
     }
 
     private void goHome() {
         Intent intent = new Intent(this, HomePageActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
+    }
+    private void deleteAccount() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            user.delete()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(EditAccountActivity.this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(this, SignInActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            Toast.makeText(EditAccountActivity.this, "Failed to delete account", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
 
     private void updateEmail() {

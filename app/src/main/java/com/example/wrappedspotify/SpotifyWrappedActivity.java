@@ -1,6 +1,8 @@
 package com.example.wrappedspotify;
 
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.util.List;
 
 public class SpotifyWrappedActivity extends AppCompatActivity {
@@ -108,6 +111,7 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
             case 0:
                 categoryHeader.setText("Top Tracks");
                 adapter.addAll(topTracks);
+
                 break;
             case 1:
                 categoryHeader.setText("Top Artists");
@@ -123,6 +127,46 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
 
         listViewData.setAdapter(adapter);
     }
+
+
+
+
+    public static void playClip(String songMp3File){
+        MediaPlayer mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try {
+            mediaPlayer.setDataSource(songMp3File);
+            // below line is use to prepare
+            // and start our media player.
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            //ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+            //executorService.schedule(MainActivity::stopClip(mediaPlayer),10, TimeUnit.SECONDS);
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                        @Override
+                        public void run() {
+                            stopClip(mediaPlayer);
+                        }
+                    },
+                    10000
+            );
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void stopClip(MediaPlayer mediaPlayer){
+        if(mediaPlayer.isPlaying()){
+            mediaPlayer.stop();
+            mediaPlayer.reset();
+            mediaPlayer.release();
+        }
+    }
+
+
 
 
 

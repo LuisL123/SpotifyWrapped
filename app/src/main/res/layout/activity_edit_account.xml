@@ -35,6 +35,14 @@
         android:text="Update Password"
         android:layout_below="@id/newPasswordField"
         android:layout_marginTop="16dp"/>
+    <Button
+        android:id="@+id/deleteAccountButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete Account"
+        android:layout_marginTop="16dp"
+        android:layout_below="@id/updatePasswordButton"
+        android:layout_centerHorizontal="true"/>
 
     <Button
         android:id="@+id/goHomeButton"

@@ -38,7 +38,7 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
     private List<String> topTracks;
     private List<String> topArtists;
     private List<String> topGenres;
-
+//COMMENT COMMIT TEST
     private int currentDisplay = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

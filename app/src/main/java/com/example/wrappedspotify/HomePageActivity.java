@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -156,6 +157,46 @@ public class HomePageActivity extends AppCompatActivity {
                 .setScopes(new String[]{"user-read-email", "user-top-read"})
                 .build();
         AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request);
+    }
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        if (requestCode == REQUEST_CODE) {
+            AuthorizationResponse response = AuthorizationClient.getResponse(resultCode, intent);
+
+            switch (response.getType()) {
+                case TOKEN:
+                    storeSpotifyToken(response.getAccessToken());
+                    break;
+                case ERROR:
+                    Log.e("Home page", "Auth error: " + response.getError());
+                    Toast.makeText(getApplicationContext(), "Auth error: " + response.getError(), Toast.LENGTH_LONG).show();
+                    break;
+                default:
+                    Log.e("Home page", "Auth canceled");
+                    Toast.makeText(getApplicationContext(), "Auth canceled", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void storeSpotifyToken(String token) {
+        String userId = mAuth.getCurrentUser().getUid();
+        if (userId == null) {
+            Toast.makeText(HomePageActivity.this, "Firebase Auth user is null. Please sign in.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        mDatabase.child("users").child(userId).child("spotifyToken").setValue(token)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(HomePageActivity.this, "Spotify account linked successfully!", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(HomePageActivity.this, HomePageActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(HomePageActivity.this, "Failed to link Spotify account.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void viewHistory() {

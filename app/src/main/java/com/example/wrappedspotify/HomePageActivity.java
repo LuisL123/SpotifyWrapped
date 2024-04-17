@@ -222,7 +222,7 @@ public class HomePageActivity extends AppCompatActivity {
         }
     }
 
-    /*public void getSongMp3File(){
+    public void getSongMp3File(){
 
         if (mAccessToken == null) {
             Toast.makeText(this, "You need to get an access token first!", Toast.LENGTH_SHORT).show();
@@ -270,7 +270,7 @@ public class HomePageActivity extends AppCompatActivity {
                 }
             }
         });
-    }*/
+    }
 
     private void fetchArtistGenres(List<String> artistIds, List<String> topTracks, List<String> topArtists, List<String> trackURIs) {
         List<String> topGenres = new ArrayList<>();

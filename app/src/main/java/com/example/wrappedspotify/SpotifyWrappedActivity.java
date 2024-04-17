@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -27,6 +28,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SpotifyWrappedActivity extends AppCompatActivity {
 
@@ -38,8 +41,13 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
     private List<String> topTracks;
     private List<String> topArtists;
     private List<String> topGenres;
+    private List<String> topURIS;
 //COMMENT COMMIT TEST
     private int currentDisplay = 0;
+    private static boolean running = false;
+    private static TimerTask timerTask;
+    private static MediaPlayer mediaPlayer;
+    private static Timer timer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +60,14 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
+        mediaPlayer = new MediaPlayer();
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                stopClip(mediaPlayer);
+            }
+        };
+        timer = new Timer();
         if (user != null) {
             String userId = user.getUid();
             mDatabase.child("users").child(userId).child("spotifyData").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -63,6 +78,8 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
                         topTracks = dataSnapshot.child("topTracks").getValue(t);
                         topArtists = dataSnapshot.child("topArtists").getValue(t);
                         topGenres = dataSnapshot.child("topGenres").getValue(t);
+                        topURIS = dataSnapshot.child("trackURIs").getValue(t);
+
                         updateDisplay();
                     } else {
                         Toast.makeText(SpotifyWrappedActivity.this, "No Spotify data found.", Toast.LENGTH_LONG).show();
@@ -111,7 +128,27 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
             case 0:
                 categoryHeader.setText("Top Tracks");
                 adapter.addAll(topTracks);
+                //MediaPlayer mediaPlayer = new MediaPlayer();
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
+//                TimerTask timerTask = new TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        stopClip(mediaPlayer);
+//                    }
+//                };
+                //Timer timer = new Timer();
+                //timer.schedule(timerTask,10000);
+
+
+                listViewData.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        timerTask.cancel();
+                        stopClip(mediaPlayer);
+                        playClip(topURIS.get(position),mediaPlayer, timer);
+                    }
+                });
                 break;
             case 1:
                 categoryHeader.setText("Top Artists");
@@ -131,10 +168,18 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
 
 
 
-    public static void playClip(String songMp3File){
-        MediaPlayer mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+    public static void playClip(String songMp3File, MediaPlayer mediaPlayer, Timer timer){
+        //MediaPlayer mediaPlayer = new MediaPlayer();
+        //mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
         try {
+            timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    stopClip(mediaPlayer);
+                }
+            };
+
             mediaPlayer.setDataSource(songMp3File);
             // below line is use to prepare
             // and start our media player.
@@ -142,7 +187,7 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
             mediaPlayer.start();
             //ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
             //executorService.schedule(MainActivity::stopClip(mediaPlayer),10, TimeUnit.SECONDS);
-            new java.util.Timer().schedule(
+            /*new java.util.Timer().schedule(
                     new java.util.TimerTask() {
                         @Override
                         public void run() {
@@ -150,8 +195,9 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
                         }
                     },
                     10000
-            );
-
+            );*/
+            timer.schedule(timerTask,10000);
+            //System.out.println("TESTINGTESTING");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -160,9 +206,12 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
 
     public static void stopClip(MediaPlayer mediaPlayer){
         if(mediaPlayer.isPlaying()){
+            //System.out.println("HERE WATCH");
             mediaPlayer.stop();
             mediaPlayer.reset();
-            mediaPlayer.release();
+            //mediaPlayer.release();
+            //mediaPlayer.release();
+            //mediaPlayer.reset();
         }
     }
 

@@ -1,6 +1,9 @@
 package com.example.wrappedspotify;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -9,12 +12,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -94,6 +99,24 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
             }
         });
 
+        @SuppressLint("WrongViewCast") ConstraintLayout constraintLayout = findViewById(R.id.mainSpotifyLayout);
+        AnimationDrawable animationDrawable = (AnimationDrawable) constraintLayout.getBackground();
+        animationDrawable.start();
+
+        RadioGroup radioGroup = findViewById(R.id.radioGroup);
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio1) {
+                    constraintLayout.setBackgroundColor(Color.rgb(1,50,32));
+                } else if (checkedId == R.id.radio2) {
+                    constraintLayout.setBackgroundColor(Color.RED);
+                } else if (checkedId == R.id.radio3) {
+                    constraintLayout.setBackgroundColor(Color.rgb(255, 160, 0));
+                }
+            }
+        });
     }
 
     private void updateDisplay() {

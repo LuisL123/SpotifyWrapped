@@ -1,41 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
+    android:background="@drawable/gradient_list"
+    android:id="@+id/mainSpotifyLayout"
     android:padding="16dp">
+
+    <!-- Default text, will change programmatically -->
+
 
     <Button
         android:id="@+id/homeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/button_background"
+        android:padding="12dp"
         android:text="Home"
-    android:padding="12dp"
-    android:background="@drawable/button_background"
-    android:textColor="@android:color/white"
-    android:layout_alignParentTop="true"
-    android:layout_alignParentStart="true" />
+        android:textColor="@android:color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
 
     <TextView
         android:id="@+id/categoryHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
+        android:text="Top Tracks"
+        android:textColor="@color/primary_text"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="@color/primary_text"
-        android:text="Top Tracks" /> <!-- Default text, will change programmatically -->
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homeButton"
+        tools:ignore="MissingConstraints" />
 
     <ListView
         android:id="@+id/listViewData"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/categoryHeader"
+        android:layout_width="183dp"
+        android:layout_height="410dp"
         android:layout_above="@id/nextButton"
+        android:layout_below="@id/categoryHeader"
         android:divider="@null"
         android:dividerHeight="0dp"
-        android:listSelector="@android:color/transparent" />
+        android:listSelector="@android:color/transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categoryHeader"
+        tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/nextButton"
@@ -43,9 +57,42 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="Next"
-        android:padding="12dp"
         android:background="@drawable/button_background"
-        android:textColor="@android:color/white" />
+        android:padding="12dp"
+        android:text="Next"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
 
-</RelativeLayout>
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="91dp"
+        android:layout_height="351dp"
+        app:layout_constraintBottom_toBottomOf="@+id/listViewData"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nextButton">
+
+        <RadioButton
+            android:id="@+id/radio1"
+            android:layout_width="match_parent"
+            android:layout_height="73dp"
+            android:text="St. Patrick's Day" />
+
+        <RadioButton
+            android:id="@+id/radio2"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:text="Valentine's Day" />
+
+        <RadioButton
+            android:id="@+id/radio3"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:text="Halloween" />
+
+    </RadioGroup>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

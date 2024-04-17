@@ -167,9 +167,11 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
                 listViewData.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        timerTask.cancel();
-                        stopClip(mediaPlayer);
-                        playClip(topURIS.get(position),mediaPlayer, timer);
+                        if(currentDisplay == 0 ){
+                            timerTask.cancel();
+                            stopClip(mediaPlayer);
+                            playClip(topURIS.get(position),mediaPlayer, timer);
+                        }
                     }
                 });
                 break;

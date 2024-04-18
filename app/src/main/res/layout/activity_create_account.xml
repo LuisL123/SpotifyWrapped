@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:text="Create Your Account"
         android:textSize="24sp"
+        android:textColor="@color/black"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="48dp"/>
 

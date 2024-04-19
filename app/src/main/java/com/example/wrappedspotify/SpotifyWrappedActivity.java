@@ -188,7 +188,7 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
                 TextView textView = view.findViewById(R.id.textViewItem);
                 textView.setText((position + 1) + ". " + getItem(position));
                 if (HomePageActivity.radioButtonPressed == 0) {
-
+                    textView.setTextColor(Color.parseColor("#FFCC00"));
                 } else if (HomePageActivity.radioButtonPressed == 1) {
                     textView.setTextColor(Color.RED);
                 } else if (HomePageActivity.radioButtonPressed == 2) {

@@ -12,8 +12,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -47,12 +48,18 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
     private List<String> topArtists;
     private List<String> topGenres;
     private List<String> topURIS;
-//COMMENT COMMIT TEST
+    //COMMENT COMMIT TEST
     private int currentDisplay = 0;
     private static boolean running = false;
     private static TimerTask timerTask;
     private static MediaPlayer mediaPlayer;
     private static Timer timer;
+    private static ImageView heart;
+
+    private static ImageView rainbow;
+    private static ImageView lantern;
+    private static TextView changing;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,8 +68,10 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
         listViewData = findViewById(R.id.listViewData);
         nextButton = findViewById(R.id.nextButton);
         categoryHeader = findViewById(R.id.categoryHeader);
-
-
+        heart = findViewById(R.id.chocolatePic);
+        rainbow = findViewById(R.id.rainbowPic);
+        lantern = findViewById(R.id.lanternPic);
+        changing = findViewById(R.id.dynamic);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         mediaPlayer = new MediaPlayer();
@@ -73,13 +82,15 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
             }
         };
         timer = new Timer();
+
         if (user != null) {
             String userId = user.getUid();
             mDatabase.child("users").child(userId).child("spotifyData").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        GenericTypeIndicator<List<String>> t = new GenericTypeIndicator<List<String>>() {};
+                        GenericTypeIndicator<List<String>> t = new GenericTypeIndicator<List<String>>() {
+                        };
                         topTracks = dataSnapshot.child("topTracks").getValue(t);
                         topArtists = dataSnapshot.child("topArtists").getValue(t);
                         topGenres = dataSnapshot.child("topGenres").getValue(t);
@@ -111,6 +122,7 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
         homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                HomePageActivity.radioButtonPressed = 0;
                 Intent intent = new Intent(SpotifyWrappedActivity.this, HomePageActivity.class);
                 startActivity(intent);
             }
@@ -120,20 +132,50 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
         AnimationDrawable animationDrawable = (AnimationDrawable) constraintLayout.getBackground();
         animationDrawable.start();
 
-        RadioGroup radioGroup = findViewById(R.id.radioGroup);
-
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.radio1) {
-                    constraintLayout.setBackgroundColor(Color.rgb(1,50,32));
-                } else if (checkedId == R.id.radio2) {
-                    constraintLayout.setBackgroundColor(Color.RED);
-                } else if (checkedId == R.id.radio3) {
-                    constraintLayout.setBackgroundColor(Color.rgb(255, 160, 0));
-                }
-            }
-        });
+//        RadioGroup radioGroup = findViewById(R.id.radioGroup);
+//
+//        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(RadioGroup group, int checkedId) {
+//                if (checkedId == R.id.radio1) {
+//                    constraintLayout.setBackgroundColor(Color.rgb(1,50,32));
+//                } else if (checkedId == R.id.radio2) {
+//                    constraintLayout.setBackgroundColor(Color.RED);
+//                } else if (checkedId == R.id.radio3) {
+//                    constraintLayout.setBackgroundColor(Color.rgb(255, 160, 0));
+//                }else if(checkedId == R.id.radio4){
+//                    constraintLayout.setBackground(ContextCompat.getDrawable(SpotifyWrappedActivity.this, R.drawable.gradient_list)
+//                    );
+//                }
+//            }
+//        });
+        if (HomePageActivity.radioButtonPressed == 0) {
+            constraintLayout.setBackground(ContextCompat.getDrawable(SpotifyWrappedActivity.this, R.drawable.gradient_list));
+            heart.setVisibility(View.INVISIBLE);
+            rainbow.setVisibility(View.INVISIBLE);
+            lantern.setVisibility(View.INVISIBLE);
+        } else if (HomePageActivity.radioButtonPressed == 1) {
+            constraintLayout.setBackground(ContextCompat.getDrawable(SpotifyWrappedActivity.this, R.drawable.patrick));
+            categoryHeader.setTextColor(Color.RED);
+            heart.setVisibility(View.INVISIBLE);
+            lantern.setVisibility(View.INVISIBLE);
+            changing.setTextColor(Color.RED);
+            changing.setText(" Happy \n St. Patrick's Day!");
+        } else if (HomePageActivity.radioButtonPressed == 2) {
+            constraintLayout.setBackground(ContextCompat.getDrawable(SpotifyWrappedActivity.this, R.drawable.valentine));
+            categoryHeader.setTextColor(Color.GREEN);
+            rainbow.setVisibility(View.INVISIBLE);
+            lantern.setVisibility(View.INVISIBLE);
+            changing.setTextColor(Color.GREEN);
+            changing.setText(" Happy \n Valentine's Day!");
+        } else if (HomePageActivity.radioButtonPressed == 3) {
+            constraintLayout.setBackground(ContextCompat.getDrawable(SpotifyWrappedActivity.this, R.drawable.halloween));
+            heart.setVisibility(View.INVISIBLE);
+            rainbow.setVisibility(View.INVISIBLE);
+            categoryHeader.setTextColor(Color.parseColor("#000000"));
+            changing.setTextColor(Color.BLACK);
+            changing.setText("Happy Halloween!");
+        }
     }
 
     private void updateDisplay() {
@@ -143,6 +185,15 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
                 View view = super.getView(position, convertView, parent);
                 TextView textView = view.findViewById(R.id.textViewItem);
                 textView.setText((position + 1) + ". " + getItem(position));
+                if (HomePageActivity.radioButtonPressed == 0) {
+
+                } else if (HomePageActivity.radioButtonPressed == 1) {
+                    textView.setTextColor(Color.RED);
+                } else if (HomePageActivity.radioButtonPressed == 2) {
+                    textView.setTextColor(Color.GREEN);
+                } else if (HomePageActivity.radioButtonPressed == 3) {
+                    textView.setTextColor(Color.BLACK);
+                }
                 return view;
             }
         };
@@ -167,10 +218,10 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
                 listViewData.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        if(currentDisplay == 0 ){
+                        if (currentDisplay == 0) {
                             timerTask.cancel();
                             stopClip(mediaPlayer);
-                            playClip(topURIS.get(position),mediaPlayer, timer);
+                            playClip(topURIS.get(position), mediaPlayer, timer);
                         }
                     }
                 });
@@ -191,9 +242,7 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
     }
 
 
-
-
-    public static void playClip(String songMp3File, MediaPlayer mediaPlayer, Timer timer){
+    public static void playClip(String songMp3File, MediaPlayer mediaPlayer, Timer timer) {
         //MediaPlayer mediaPlayer = new MediaPlayer();
         //mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
@@ -221,7 +270,7 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
                     },
                     10000
             );*/
-            timer.schedule(timerTask,10000);
+            timer.schedule(timerTask, 10000);
             //System.out.println("TESTINGTESTING");
 
         } catch (IOException e) {
@@ -229,8 +278,8 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
         }
     }
 
-    public static void stopClip(MediaPlayer mediaPlayer){
-        if(mediaPlayer.isPlaying()){
+    public static void stopClip(MediaPlayer mediaPlayer) {
+        if (mediaPlayer.isPlaying()) {
             //System.out.println("HERE WATCH");
             mediaPlayer.stop();
             mediaPlayer.reset();
@@ -239,9 +288,6 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
             //mediaPlayer.reset();
         }
     }
-
-
-
 
 
 }

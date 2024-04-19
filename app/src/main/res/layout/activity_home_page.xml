@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Log Out"
-        android:layout_below="@id/buttonRequestNewToken"
+        android:layout_below="@id/buttonEditAccount"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:background="@drawable/button_style"
@@ -50,10 +50,63 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Edit Account Information"
-        android:layout_below="@id/buttonLogout"
+        android:layout_below="@id/buttonRequestNewToken"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:background="@drawable/button_style"
         android:textColor="@android:color/white"/>
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Is today a holiday?"
+        android:textColor="@color/black"
+        android:layout_marginLeft="55dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginTop="400dp"
+        android:textSize="30dp"/>
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="450dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="0dp"
+        >
+
+        <RadioButton
+            android:id="@+id/radio4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No special holiday"
+            android:textSize="20dp"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/radio1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="St. Patrick's Day"
+            android:textSize="20dp"/>
+
+        <RadioButton
+            android:id="@+id/radio2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Valentine's Day"
+            android:textSize="20dp"/>
+
+        <RadioButton
+            android:id="@+id/radio3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Halloween"
+            android:textSize="20dp"/>
+
+
+
+    </RadioGroup>
+
+
 
 </RelativeLayout>

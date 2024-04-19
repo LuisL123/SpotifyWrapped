@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -46,6 +47,7 @@ public class HomePageActivity extends AppCompatActivity {
     private static final String CLIENT_ID = "045795b20f1745d5960bbbef296de6a1";
     private static final int REQUEST_CODE = 1337;
 
+    public static int radioButtonPressed = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +72,22 @@ public class HomePageActivity extends AppCompatActivity {
         editAccountButton.setOnClickListener(v -> {
             Intent intent = new Intent(HomePageActivity.this, EditAccountActivity.class);
             startActivity(intent);
+        });
+                RadioGroup radioGroup = findViewById(R.id.radioGroup);
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.radio1) {
+                    radioButtonPressed = 1;
+                } else if (checkedId == R.id.radio2) {
+                    radioButtonPressed = 2;
+                } else if (checkedId == R.id.radio3) {
+                    radioButtonPressed = 3;
+                }else if(checkedId == R.id.radio4){
+                    radioButtonPressed = 0;
+                }
+            }
         });
     }
 
@@ -106,7 +124,7 @@ public class HomePageActivity extends AppCompatActivity {
 
     private void fetchTopDataFromSpotify() {
         final Request request = new Request.Builder()
-                .url("https://api.spotify.com/v1/me/top/tracks?limit=3")
+                .url("https://api.spotify.com/v1/me/top/tracks?limit=7")
                 .addHeader("Authorization", "Bearer " + mAccessToken)
                 .build();
 

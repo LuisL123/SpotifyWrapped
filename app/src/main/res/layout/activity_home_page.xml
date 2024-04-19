@@ -7,7 +7,7 @@
         android:id="@+id/buttonFetchTopSongs"
         android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="Fetch Top Songs"
+    android:text="View Spotify Wrapped"
     android:layout_centerHorizontal="true"
     android:layout_marginTop="20dp"
     android:background="@drawable/button_style"

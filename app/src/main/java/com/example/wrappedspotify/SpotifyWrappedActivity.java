@@ -51,6 +51,8 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
     //COMMENT COMMIT TEST
     private int currentDisplay = 0;
     private static boolean running = false;
+
+
     private static TimerTask timerTask;
     private static MediaPlayer mediaPlayer;
     private static Timer timer;

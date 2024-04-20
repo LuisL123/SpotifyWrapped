@@ -165,10 +165,10 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
             changing.setText(" Happy \n St. Patrick's Day!");
         } else if (HomePageActivity.radioButtonPressed == 2) {
             constraintLayout.setBackground(ContextCompat.getDrawable(SpotifyWrappedActivity.this, R.drawable.valentine));
-            categoryHeader.setTextColor(Color.GREEN);
+            categoryHeader.setTextColor(Color.BLACK);
             rainbow.setVisibility(View.INVISIBLE);
             lantern.setVisibility(View.INVISIBLE);
-            changing.setTextColor(Color.GREEN);
+            changing.setTextColor(Color.BLACK);
             changing.setText(" Happy \n Valentine's Day!");
         } else if (HomePageActivity.radioButtonPressed == 3) {
             constraintLayout.setBackground(ContextCompat.getDrawable(SpotifyWrappedActivity.this, R.drawable.halloween));
@@ -192,7 +192,7 @@ public class SpotifyWrappedActivity extends AppCompatActivity {
                 } else if (HomePageActivity.radioButtonPressed == 1) {
                     textView.setTextColor(Color.RED);
                 } else if (HomePageActivity.radioButtonPressed == 2) {
-                    textView.setTextColor(Color.GREEN);
+                    textView.setTextColor(Color.BLACK);
                 } else if (HomePageActivity.radioButtonPressed == 3) {
                     textView.setTextColor(Color.BLACK);
                 }

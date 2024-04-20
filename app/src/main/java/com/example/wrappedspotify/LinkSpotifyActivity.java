@@ -46,6 +46,7 @@ public class LinkSpotifyActivity extends AppCompatActivity {
                 .setShowDialog(false)
                 .setScopes(new String[] { "user-read-email", "user-top-read"    }) // <--- Change the scope of your requested token here
                 .setCampaign("your-campaign-token")
+                .setShowDialog(true)
                 .build();
         AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request);
     }

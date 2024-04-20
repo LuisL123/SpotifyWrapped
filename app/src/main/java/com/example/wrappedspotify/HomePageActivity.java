@@ -116,7 +116,10 @@ public class HomePageActivity extends AppCompatActivity {
 
     private void logoutUser() {
         FirebaseAuth.getInstance().signOut();
-
+//        Request request = new Request.Builder()
+//                .url("https://api.accounts.spotify.com/logout")
+//                .build();
+//        mOkHttpClient.newCall(request);
         Intent intent = new Intent(HomePageActivity.this, SignInActivity.class);
         startActivity(intent);
         finish();
@@ -171,7 +174,7 @@ public class HomePageActivity extends AppCompatActivity {
 
     private void authenticateSpotify() {
         AuthorizationRequest request = new AuthorizationRequest.Builder(CLIENT_ID, AuthorizationResponse.Type.TOKEN, REDIRECT_URI)
-                .setShowDialog(false)
+                .setShowDialog(true)
                 .setScopes(new String[]{"user-read-email", "user-top-read"})
                 .build();
         AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request);
